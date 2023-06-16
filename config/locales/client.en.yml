@@ -2058,7 +2058,7 @@ en:
       disable: "Show All Posts"
       short_label: "Summarize"
       short_title: "Show a summary of this topic: the most interesting posts as determined by the community"
-      strategy: 
+      strategy:
         button_title: "Summarize this topic"
         title: "Topic summary"
 
@@ -3891,6 +3891,8 @@ en:
       personal_message:
         title: "This topic is a personal message"
         help: "This topic is a personal message"
+    topic_edit:
+      tag_filter_placeholder: "+ tag"
     posts: "Posts"
     pending_posts:
       label: "Pending"
