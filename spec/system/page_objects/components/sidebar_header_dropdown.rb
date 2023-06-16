@@ -25,12 +25,12 @@ module PageObjects
 
       def click_community_header_button
         page.click_button(
-          I18n.t("js.sidebar.sections.community.header_action_title"),
+          I18n.t("js.sidebar.sections.community.header_action_create_topic_title"),
           class: "sidebar-section-header-button",
         )
       end
 
-      def click_everything_link
+      def click_topics_link
         find(".sidebar-section-link[data-link-name='everything']").click
       end
 

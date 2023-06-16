@@ -6,18 +6,48 @@ module PageObjects
       class Messages < PageObjects::Components::Base
         attr_reader :context
 
-        SELECTOR = ".chat-message-container"
+        SELECTOR = ".chat-messages-scroll"
 
         def initialize(context)
           @context = context
         end
 
+        def component
+          page.find(context)
+        end
+
+        def select(args)
+          find(args).select
+        end
+
+        def shift_select(args)
+          find(args).select(shift: true)
+        end
+
+        def find(args)
+          if args.is_a?(Hash)
+            message.find(**args)
+          else
+            message.find(id: args.id)
+          end
+        end
+
         def has_message?(**args)
-          PageObjects::Components::Chat::Message.new(".chat-channel").exists?(**args)
+          message.exists?(**args)
         end
 
         def has_no_message?(**args)
-          !has_message?(**args)
+          message.does_not_exist?(**args)
+        end
+
+        def has_selected_messages?(*messages)
+          messages.all? { |message| has_message?(id: message.id, selected: true) }
+        end
+
+        private
+
+        def message
+          PageObjects::Components::Chat::Message.new("#{context} #{SELECTOR}")
         end
       end
     end

@@ -75,17 +75,24 @@ module Chat
           },
           permissions(chat_channel),
         )
+
+        publish_thread_original_message_metadata!(chat_message.thread)
       end
     end
 
     def self.publish_thread_original_message_metadata!(thread)
+      preview =
+        ::Chat::ThreadPreviewSerializer.new(
+          thread,
+          participants: ::Chat::ThreadParticipantQuery.call(thread_ids: [thread.id])[thread.id],
+          root: false,
+        ).as_json
       publish_to_channel!(
         thread.channel,
         {
           type: :update_thread_original_message,
           original_message_id: thread.original_message_id,
-          replies_count: thread.replies_count_cache,
-          title: thread.title,
+          preview: preview.as_json,
         },
       )
     end
@@ -300,6 +307,7 @@ module Chat
           guardian: user.guardian,
           thread_ids: [message.thread_id],
           include_threads: true,
+          include_missing_memberships: true,
         ).find_thread(message.thread_id)
       end
 

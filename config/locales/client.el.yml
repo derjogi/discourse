@@ -3295,11 +3295,14 @@ el:
       more: "Περισσότερα"
       all_categories: "Όλες οι κατηγορίες"
       all_tags: "Όλες οι ετικέτες"
+      categories_form:
+        save: "Αποθήκευση"
       sections:
         custom:
           save: "Αποθήκευση"
           delete: "Σβήσιμο"
           links:
+            reset: "Επαναφορά στο προεπιλεγμένο"
             icon:
               label: "Σύμβολο"
             name:
@@ -3339,7 +3342,7 @@ el:
           configure_defaults: "Ρύθμιση προεπιλογών"
         community:
           header_link_text: "Κοινότητα"
-          header_action_title: "Δημιουργήστε ένα θέμα"
+          header_action_create_topic_title: "Δημιουργήστε ένα θέμα"
           links:
             about:
               content: "Σχετικά"
@@ -3347,9 +3350,6 @@ el:
               content: "Διαχείριση"
             badges:
               content: "Παράσημα"
-            everything:
-              content: "Τα πάνΤα"
-              title: "Όλα τα θέματα"
             faq:
               content: "Συχνές ερωτήσεις"
             groups:
@@ -4262,6 +4262,8 @@ el:
               key: "απαραίτητο"
             minimum:
               key: "ελάχιστο"
+            type:
+              key: "τύπος"
       impersonate:
         title: "Υποδυθείτε"
         help: "Χρησιμοποίησε αυτό το εργαλείο για να εντοπίσεις λάθη υποδυόμενος κάποιον άλλο χρήστη. Θα πρέπει να αποσυνδεθείς όταν τελειώσεις."

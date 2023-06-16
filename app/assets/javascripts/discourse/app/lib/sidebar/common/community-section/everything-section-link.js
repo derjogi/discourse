@@ -2,7 +2,7 @@ import I18n from "I18n";
 
 import { tracked } from "@glimmer/tracking";
 import BaseSectionLink from "discourse/lib/sidebar/base-community-section-link";
-import { UNREAD_LIST_DESTINATION } from "discourse/controllers/preferences/sidebar";
+import { UNREAD_LIST_DESTINATION } from "discourse/controllers/preferences/navigation-menu";
 
 export default class EverythingSectionLink extends BaseSectionLink {
   @tracked totalUnread = 0;
@@ -44,7 +44,10 @@ export default class EverythingSectionLink extends BaseSectionLink {
   }
 
   get text() {
-    return I18n.t("sidebar.sections.community.links.everything.content");
+    return I18n.t(
+      `sidebar.sections.community.links.${this.overridenName.toLowerCase()}.content`,
+      { defaultValue: this.overridenName }
+    );
   }
 
   get currentWhen() {
@@ -92,7 +95,7 @@ export default class EverythingSectionLink extends BaseSectionLink {
     return "discovery.latest";
   }
 
-  get prefixValue() {
+  get defaultPrefixValue() {
     return "layer-group";
   }
 

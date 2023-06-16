@@ -367,6 +367,7 @@ pt_BR:
         no_results: "Nenhum resultado"
       thread:
         title: "Título"
+        default_title: "Tópico"
         replies:
           one: "%{count} resposta"
           other: "%{count} respostas"
@@ -374,6 +375,7 @@ pt_BR:
         original_message:
           started_by: "Iniciado por"
         settings: "Definições"
+        last_reply: "última resposta"
       threads:
         open: "Tópico Aberto"
       draft_channel_screen:

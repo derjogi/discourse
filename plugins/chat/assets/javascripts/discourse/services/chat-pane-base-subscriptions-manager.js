@@ -27,7 +27,7 @@ export function handleStagedMessage(channel, messagesManager, data) {
 /**
  * Handles subscriptions for MessageBus messages sent from Chat::Publisher
  * to the channel and thread panes. There are individual services for
- * each (ChatChannelPaneSubscriptionsManager and ChatChannelThreadPaneSubscriptionsManager)
+ * each (ChatChannelPaneSubscriptionsManager and ChatThreadPaneSubscriptionsManager)
  * that implement their own logic where necessary. Functions which will
  * always be different between the two raise a "not implemented" error in
  * the base class, and the child class must define the associated function,
@@ -230,7 +230,7 @@ export default class ChatPaneBaseSubscriptionsManager extends Service {
           stagedThread.staged = false;
           stagedThread.id = data.thread_id;
           stagedThread.originalMessage.thread = stagedThread;
-          stagedThread.originalMessage.threadReplyCount ??= 1;
+          stagedThread.originalMessage.thread.preview.replyCount ??= 1;
         } else if (data.thread_id) {
           this.model.threadsManager
             .find(this.model.id, data.thread_id, { fetchIfNotFound: true })

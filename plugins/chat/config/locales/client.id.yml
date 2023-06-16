@@ -115,12 +115,13 @@ id:
         flags: "Flags"
       thread:
         title: "Judul"
-        default_title: "Utas #%{thread_id}"
+        default_title: "Utas"
         replies:
           other: "%{count} balasan"
         original_message:
           started_by: "Dimulai oleh"
         settings: "Pengaturan"
+        last_reply: "balasan terakhir"
       threads:
         list: "Diskusi yang sedang berlangsung"
         none: "Anda tidak berpartisipasi dalam utas apa pun di kanal ini."

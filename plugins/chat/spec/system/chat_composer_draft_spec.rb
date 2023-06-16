@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe "Chat composer draft", type: :system, js: true do
+RSpec.describe "Chat composer draft", type: :system do
   fab!(:current_user) { Fabricate(:user) }
   fab!(:channel_1) { Fabricate(:chat_channel) }
   fab!(:message_1) { Fabricate(:chat_message, chat_channel: channel_1) }
@@ -71,6 +71,17 @@ RSpec.describe "Chat composer draft", type: :system, js: true do
         chat_page.visit_channel(channel_1)
 
         expect(channel_page.composer).to be_editing_message(message_1)
+      end
+
+      context "when canceling editing" do
+        it "resets the draft" do
+          chat_page.visit_channel(channel_1)
+          channel_page.composer.message_details.cancel_edit
+
+          expect(channel_page.composer).to be_blank
+          expect(channel_page.composer).to have_unsaved_draft
+          expect(channel_page.composer).to have_saved_draft
+        end
       end
     end
 

@@ -24,11 +24,16 @@ export default class ChatApi extends Service {
    */
   channel(channelId, data = {}) {
     const args = {};
+    args.page_size = data.pageSize;
 
     if (data.targetMessageId) {
       args.target_message_id = data.targetMessageId;
+    } else if (data.fetchFromLastRead) {
+      args.fetch_from_last_read = true;
     } else {
-      args.page_size = data.pageSize;
+      if (data.direction) {
+        args.direction = data.direction;
+      }
 
       if (data.includeMessages) {
         args.include_messages = true;
@@ -60,13 +65,7 @@ export default class ChatApi extends Service {
    *    this.chatApi.thread(5, 1).then(thread => { ... })
    */
   thread(channelId, threadId) {
-    return this.#getRequest(`/channels/${channelId}/threads/${threadId}`).then(
-      (result) =>
-        this.chat.activeChannel.threadsManager.store(
-          this.chat.activeChannel,
-          result.thread
-        )
-    );
+    return this.#getRequest(`/channels/${channelId}/threads/${threadId}`);
   }
 
   /**
@@ -171,6 +170,8 @@ export default class ChatApi extends Service {
    * @param {string} data.cooked - The cooked content of the message.
    * @param {number} [data.in_reply_to_id] - The ID of the replied-to message.
    * @param {number} [data.staged_id] - The staged ID of the message before it was persisted.
+   * @param {number} [data.thread_id] - The ID of the thread where this message should be posted.
+   * @param {number} [data.staged_thread_id] - The staged ID of the thread before it was persisted.
    * @param {Array.<number>} [data.upload_ids] - Array of upload ids linked to the message.
    * @returns {Promise}
    */
@@ -278,43 +279,6 @@ export default class ChatApi extends Service {
   }
 
   /**
-   * Returns messages of a channel, from the last message or a specified target.
-   * @param {number} channelId - The ID of the channel.
-   * @param {object} data - Params of the query.
-   * @param {integer} data.targetMessageId - ID of the targeted message.
-   * @param {integer} data.messageId - ID of the targeted message.
-   * @param {integer} data.direction - Fetch past or future messages.
-   * @param {integer} data.pageSize - Max number of messages to fetch.
-   * @returns {Promise}
-   */
-  messages(channelId, data = {}) {
-    let path;
-    const args = {};
-
-    if (data.targetMessageId) {
-      path = `/chat/lookup/${data.targetMessageId}`;
-      args.chat_channel_id = channelId;
-    } else {
-      args.page_size = data.pageSize;
-      path = `/chat/${channelId}/messages`;
-
-      if (data.messageId) {
-        args.message_id = data.messageId;
-      }
-
-      if (data.direction) {
-        args.direction = data.direction;
-      }
-
-      if (data.threadId) {
-        args.thread_id = data.threadId;
-      }
-    }
-
-    return ajax(path, { data: args });
-  }
-
-  /**
    * Update notifications settings of current user for a channel.
    * @param {number} channelId - The ID of the channel.
    * @param {object} data - The settings to modify.
@@ -327,6 +291,22 @@ export default class ChatApi extends Service {
     return this.#putRequest(
       `/channels/${channelId}/notifications-settings/me`,
       { notifications_settings: data }
+    );
+  }
+
+  /**
+   * Update notifications settings of current user for a thread.
+   * @param {number} channelId - The ID of the channel.
+   * @param {number} threadId - The ID of the thread.
+   * @param {object} data - The settings to modify.
+   * @param {boolean} [data.notification_level] - The new notification level, c.f. Chat::NotificationLevels. Threads only support
+   *  "regular" and "tracking" for now.
+   * @returns {Promise}
+   */
+  updateCurrentUserThreadNotificationsSettings(channelId, threadId, data) {
+    return this.#putRequest(
+      `/channels/${channelId}/threads/${threadId}/notifications-settings/me`,
+      { notification_level: data.notificationLevel }
     );
   }
 
@@ -465,6 +445,19 @@ export default class ChatApi extends Service {
    */
   editThread(channelId, threadId, data) {
     return this.#putRequest(`/channels/${channelId}/threads/${threadId}`, data);
+  }
+
+  /**
+   * Generate a quote for a list of messages.
+   *
+   * @param {number} channelId - The ID of the channel containing the messages.
+   * @param {Array<number>} messageIds - The IDs of the messages to quote.
+   */
+  generateQuote(channelId, messageIds) {
+    return ajax(`/chat/${channelId}/quote`, {
+      type: "POST",
+      data: { message_ids: messageIds },
+    });
   }
 
   get #basePath() {

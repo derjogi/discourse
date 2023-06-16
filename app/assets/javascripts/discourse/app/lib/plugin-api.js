@@ -68,7 +68,6 @@ import {
 import { addTagsHtmlCallback } from "discourse/lib/render-tags";
 import { addToolbarCallback } from "discourse/components/d-editor";
 import { addTopicParticipantClassesCallback } from "discourse/widgets/topic-map";
-import { addTopicSummaryCallback } from "discourse/widgets/toggle-topic-summary";
 import { addTopicTitleDecorator } from "discourse/components/topic-title";
 import { addUserMenuProfileTabItem } from "discourse/components/user-menu/profile-tab-content";
 import { addUsernameSelectorDecorator } from "discourse/helpers/decorate-username-selector";
@@ -95,10 +94,13 @@ import { replaceTagRenderer } from "discourse/lib/render-tag";
 import { registerCustomLastUnreadUrlCallback } from "discourse/models/topic";
 import { setNewCategoryDefaultColors } from "discourse/routes/new-category";
 import { addSearchResultsCallback } from "discourse/lib/search";
+import { addOnKeyDownCallback } from "discourse/widgets/search-menu";
 import {
   addQuickSearchRandomTip,
   addSearchSuggestion,
+  removeDefaultQuickSearchRandomTips,
 } from "discourse/widgets/search-menu-results";
+import { addSearchSuggestion as addGlimmerSearchSuggestion } from "discourse/components/search-menu/results/assistant";
 import { CUSTOM_USER_SEARCH_OPTIONS } from "select-kit/components/user-chooser";
 import { downloadCalendar } from "discourse/lib/download-calendar";
 import { consolePrefix } from "discourse/lib/source-identifier";
@@ -1046,28 +1048,6 @@ class PluginApi {
   }
 
   /**
-   * EXPERIMENTAL. Do not use.
-   * Adds a callback to be topic summary widget markup that can be used, for example,
-   * to add an extra button to the topic summary widget.
-   *
-   * Example:
-   *
-   *  api.addTopicSummaryCallback((html, attrs, widget) => {
-   *    html.push(
-   *      widget.attach("button", {
-   *        className: "btn btn-primary",
-   *        icon: "magic",
-   *        title: "discourse_ai.ai_helper.title",
-   *        label: "discourse_ai.ai_helper.title",
-   *        action: "showAiSummary",
-   *     })
-   *   );
-   **/
-  addTopicSummaryCallback(callback) {
-    addTopicSummaryCallback(callback);
-  }
-
-  /**
    *
    * Adds a callback to be executed on the "transformed" post that is passed to the post
    * widget.
@@ -1688,6 +1668,7 @@ class PluginApi {
    */
   addSearchSuggestion(value) {
     addSearchSuggestion(value);
+    addGlimmerSearchSuggestion(value);
   }
 
   /**
@@ -1708,6 +1689,25 @@ class PluginApi {
   }
 
   /**
+   * Add a function to be called when there is a keyDown even on the search-menu widget.
+   * This function runs before the default logic, and if one callback returns a falsey value
+   * the logic chain will stop, to prevent the core behavior from occuring.
+   *
+   * Example usage:
+   * ```
+   * api.addSearchMenuOnKeyDownCallback((searchMenu, event) => {
+   *  if (searchMenu.term === "stop") {
+   *    return false;
+   *  }
+   * });
+   * ```
+   *
+   */
+  addSearchMenuOnKeyDownCallback(fn) {
+    addOnKeyDownCallback(fn);
+  }
+
+  /**
    * Add a quick search tip shown randomly when the search dropdown is invoked on desktop.
    *
    * Example usage:
@@ -1724,6 +1724,19 @@ class PluginApi {
    */
   addQuickSearchRandomTip(tip) {
     addQuickSearchRandomTip(tip);
+  }
+
+  /**
+   * Remove the default quick search tips shown randomly when the search dropdown is invoked on desktop.
+   *
+   * Usage:
+   * ```
+   * api.removeDefaultQuickSearchRandomTips();
+   * ```
+   *
+   */
+  removeDefaultQuickSearchRandomTips(tip) {
+    removeDefaultQuickSearchRandomTips(tip);
   }
 
   /**
@@ -1848,10 +1861,11 @@ class PluginApi {
    *
    * @param {(addCommunitySectionLinkCallback|Object)} arg - A callback function or an Object.
    * @param {string} arg.name - The name of the link. Needs to be dasherized and lowercase.
-   * @param {string=} arg.route - The Ember route name to generate the href attribute for the link.
-   * @param {string=} arg.href - The href attribute for the link.
    * @param {string} arg.title - The title attribute for the link.
    * @param {string} arg.text - The text to display for the link.
+   * @param {string} [arg.route] - The Ember route name to generate the href attribute for the link.
+   * @param {string} [arg.href] - The href attribute for the link.
+   * @param {string} [arg.icon] - The FontAwesome icon to display for the link.
    * @param {Boolean} [secondary] - Determines whether the section link should be added to the main or secondary section in the "More..." links drawer.
    */
   addCommunitySectionLink(arg, secondary) {
@@ -1904,7 +1918,7 @@ class PluginApi {
    * @param {Object} arg - An object
    * @param {string} arg.badgeTextFunction - Function used to generate the text for the badge displayed in the section link.
    * @param {string} arg.route - The Ember route name to generate the href attribute for the link.
-   * @param {Object=} arg.routeQuery - Object representing the query params that should be appended to the route generated.
+   * @param {Object} [arg.routeQuery] - Object representing the query params that should be appended to the route generated.
    * @param {shouldRegister} arg.shouldRegister - Function used to determine if the countable should be registered for the category.
    * @param {refreshCountFunction} arg.refreshCountFunction - Function used to calculate the value used to set the property for the count whenever the sidebar section link refreshes.
    * @param {prioritizeOverDefaults} args.prioritizeOverDefaults - Function used to determine whether the countable should be prioritized over the default countables of unread/new.

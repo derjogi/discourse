@@ -2850,11 +2850,14 @@ hy:
         other: "%{count} նոր"
       more: "Ավելին"
       all_categories: "Բոլոր կատեգորիաները"
+      categories_form:
+        save: "Պահպանել"
       sections:
         custom:
           save: "Պահպանել"
           delete: "Ջնջել"
           links:
+            reset: "Վերականգնել լռելյայն"
             icon:
               label: "Պատկերակ"
             name:
@@ -2884,8 +2887,6 @@ hy:
               content: "Ադմին"
             badges:
               content: "Կրծքանշաններ"
-            everything:
-              content: "Բոլորը"
             faq:
               content: "ՀՏՀ"
             groups:
@@ -3755,6 +3756,8 @@ hy:
           validations:
             required:
               key: "պարտադիր է"
+            type:
+              key: "տիպը"
       impersonate:
         title: "Նմանակել"
         help: "Օգտագործեք այս գործիքը՝ վրիպազերծման նպատակով օգտատիրոջ հաշիվը նմանակելու համար: Դուք պետք է ավարտելուց հետո դուրս գրվեք:"

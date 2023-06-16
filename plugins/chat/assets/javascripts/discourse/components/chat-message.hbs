@@ -7,25 +7,35 @@
   {{/if}}
 
   <div
-    {{will-destroy this.teardownChatMessage}}
-    {{did-insert this.decorateCookedMessage}}
-    {{did-update this.decorateCookedMessage @message.id}}
-    {{did-update this.decorateCookedMessage @message.version}}
-    {{on "touchmove" this.handleTouchMove passive=true}}
-    {{on "touchstart" this.handleTouchStart passive=true}}
-    {{on "touchend" this.handleTouchEnd passive=true}}
-    {{on "mouseenter" this.onMouseEnter passive=true}}
-    {{on "mouseleave" this.onMouseLeave passive=true}}
-    {{on "mousemove" this.onMouseMove passive=true}}
     class={{concat-class
       "chat-message-container"
-      (if this.pane.selectingMessages "selecting-messages")
-      (if @message.highlighted "highlighted")
+      (if this.pane.selectingMessages "-selectable")
+      (if @message.highlighted "-highlighted")
       (if (eq @message.user.id this.currentUser.id) "is-by-current-user")
-      (if @message.staged "is-staged" "is-persisted")
+      (if @message.staged "-staged" "-persisted")
+      (if this.hasActiveState "-active")
+      (if @message.bookmark "-bookmarked")
+      (if @message.deletedAt "-deleted")
+      (if @message.selected "-selected")
+      (if @message.error "-errored")
+      (if this.showThreadIndicator "has-thread-indicator")
+      (if this.hideUserInfo "-user-info-hidden")
+      (if this.hasReply "has-reply")
     }}
     data-id={{@message.id}}
     data-thread-id={{@message.thread.id}}
+    {{did-insert this.didInsertMessage}}
+    {{did-update this.didUpdateMessageId @message.id}}
+    {{did-update this.didUpdateMessageVersion @message.version}}
+    {{will-destroy this.willDestroyMessage}}
+    {{on "mouseenter" this.onMouseEnter passive=true}}
+    {{on "mouseleave" this.onMouseLeave passive=true}}
+    {{on "mousemove" this.onMouseMove passive=true}}
+    {{chat/on-long-press
+      this.handleLongPressStart
+      this.handleLongPressEnd
+      this.onLongPressCancel
+    }}
     {{chat/track-message
       (hash
         didEnterViewport=(fn @messageDidEnterViewport @message)
@@ -44,7 +54,7 @@
       {{/if}}
 
       {{#if this.deletedAndCollapsed}}
-        <div class="chat-message-deleted">
+        <div class="chat-message-text chat-message-deleted">
           <DButton
             @class="btn-flat chat-message-expand"
             @action={{this.expand}}
@@ -60,21 +70,7 @@
           />
         </div>
       {{else}}
-        <div
-          {{did-insert this.refreshStatusOnMentions}}
-          {{did-update this.refreshStatusOnMentions @message.version}}
-          {{did-update this.initMentionedUsers @message.version}}
-          class={{concat-class
-            "chat-message"
-            (if @message.deletedAt "deleted")
-            (if (and @message.inReplyTo (not this.hideReplyToInfo)) "is-reply")
-            (if this.showThreadIndicator "is-threaded")
-            (if this.hideUserInfo "user-info-hidden")
-            (if @message.error "errored")
-            (if @message.bookmark "chat-message-bookmarked")
-            (if (eq @message.id this.chat.activeMessage.model.id) "is-active")
-          }}
-        >
+        <div class="chat-message">
           {{#unless this.hideReplyToInfo}}
             <ChatMessageInReplyToIndicator @message={{@message}} />
           {{/unless}}
@@ -191,9 +187,9 @@
                   {{/if}}
 
                   {{#if this.mentionWarning.groups_with_too_many_members}}
-                    <p
-                      class="warning-item"
-                    >{{this.groupsWithTooManyMembers}}</p>
+                    <p class="warning-item">
+                      {{this.groupsWithTooManyMembers}}
+                    </p>
                   {{/if}}
                 {{/if}}
               </div>

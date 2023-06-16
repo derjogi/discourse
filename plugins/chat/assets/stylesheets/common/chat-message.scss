@@ -21,7 +21,6 @@
 .chat-message {
   align-items: flex-start;
   padding: 0.25em 0.5em 0.25em 0.75em;
-  background-color: var(--secondary);
   display: flex;
   min-width: 0;
 
@@ -29,54 +28,8 @@
     @include chat-reaction;
   }
 
-  &.chat-action {
-    background-color: var(--highlight-bg);
-  }
-
-  &.errored {
-    color: var(--primary-medium);
-  }
-
-  &.deleted {
-    background-color: var(--danger-low);
-  }
-
   .not-mobile-device &.deleted:hover {
     background-color: var(--danger-hover);
-  }
-
-  &.is-reply {
-    display: grid;
-    grid-template-columns: var(--message-left-width) 1fr;
-    grid-template-rows: 30px auto;
-    grid-template-areas:
-      "replyto replyto"
-      "avatar message";
-
-    .chat-user-avatar {
-      grid-area: avatar;
-    }
-
-    .chat-message-content {
-      grid-area: message;
-    }
-  }
-
-  &.is-threaded {
-    display: grid;
-    grid-template-columns: var(--message-left-width) 1fr;
-    grid-template-rows: auto 32px;
-    grid-template-areas:
-      "avatar message"
-      "threadindicator threadindicator";
-
-    .chat-user-avatar {
-      grid-area: avatar;
-    }
-
-    .chat-message-content {
-      grid-area: message;
-    }
   }
 
   .chat-message-content {
@@ -201,71 +154,107 @@
   }
 }
 
-.chat-message-container.highlighted .chat-message {
-  background-color: var(--tertiary-low) !important;
+.touch .chat-message-container {
+  &.-active {
+    background: var(--d-hover);
+    border-radius: 5px;
+
+    &.-bookmarked {
+      background: var(--highlight-low);
+    }
+  }
 }
 
-.chat-messages-container {
-  .chat-message {
-    &.chat-message-bookmarked {
-      background: var(--highlight-bg);
-    }
+.no-touch .chat-message-container {
+  &:hover,
+  &.-active {
+    background: var(--d-hover);
+  }
 
+  &:hover {
     .chat-message-reaction-list .chat-message-react-btn {
-      display: none;
+      display: inline-block;
+    }
+  }
+
+  &.-active,
+  &:hover {
+    &.-bookmarked {
+      background: var(--highlight-medium);
     }
 
-    .touch & {
-      &:active {
-        background: var(--d-hover);
-        border-radius: 5px;
-      }
-
-      &.chat-message-bookmarked {
-        &:active {
-          background: var(--highlight-low);
-        }
-      }
+    &.-deleted {
+      background-color: var(--danger-medium);
     }
 
-    .no-touch & {
-      &.is-active,
-      &:hover,
-      &:active {
-        background: var(--d-hover);
-      }
-
-      &:hover {
-        .chat-message-react-btn {
-          display: inline-block;
-        }
-      }
-
-      &.chat-message-bookmarked {
-        &.is-active,
-        &:hover {
-          background: var(--highlight-medium);
-        }
-      }
+    &.-highlighted {
+      background-color: var(--tertiary-medium);
     }
   }
 }
 
-.chat-message-flagged {
-  display: inline-block;
-  color: var(--danger);
-  height: 100%;
-  padding: 0 0.3em;
-  cursor: pointer;
+.chat-message-container {
+  background-color: var(--secondary);
 
-  .flag-count,
-  .d-icon {
-    color: var(--danger);
+  &.-errored {
+    color: var(--primary-medium);
   }
-}
 
-.chat-action-text {
-  font-style: italic;
+  &.-deleted {
+    background-color: var(--danger-low);
+    padding-block: 0.25rem;
+  }
+
+  &.-bookmarked {
+    background: var(--highlight-bg);
+  }
+
+  &.-highlighted {
+    background-color: var(--tertiary-low);
+  }
+
+  &.has-reply {
+    .chat-message {
+      display: grid;
+      grid-template-columns: var(--message-left-width) 1fr;
+      grid-template-rows: 30px auto;
+      grid-template-areas:
+        "replyto replyto"
+        "avatar message";
+
+      .chat-user-avatar {
+        grid-area: avatar;
+      }
+
+      .chat-message-content {
+        grid-area: message;
+      }
+    }
+  }
+
+  &.has-thread-indicator {
+    .chat-message {
+      display: grid;
+      grid-template-columns: var(--message-left-width) 1fr;
+      grid-template-rows: auto;
+      grid-template-areas:
+        "avatar message"
+        "threadindicator threadindicator";
+      padding-bottom: 0.65rem !important;
+
+      .chat-user-avatar {
+        grid-area: avatar;
+      }
+
+      .chat-message-content {
+        grid-area: message;
+      }
+    }
+  }
+
+  .chat-message-reaction-list .chat-message-react-btn {
+    display: none;
+  }
 }
 
 .has-full-page-chat .chat-message .onebox:not(img),
@@ -328,7 +317,7 @@
 
   &:hover,
   &:focus,
-  &:active {
+  .-active & {
     background: none !important;
   }
 

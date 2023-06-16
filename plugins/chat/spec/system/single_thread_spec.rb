@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe "Single thread in side panel", type: :system, js: true do
+describe "Single thread in side panel", type: :system do
   fab!(:current_user) { Fabricate(:user) }
 
   let(:chat_page) { PageObjects::Pages::Chat.new }
@@ -105,19 +105,6 @@ describe "Single thread in side panel", type: :system, js: true do
       expect(side_panel).to have_open_thread(thread)
     end
 
-    xit "shows the excerpt of the thread original message" do
-      chat_page.visit_channel(channel)
-      channel_page.message_thread_indicator(thread.original_message).click
-      expect(thread_page).to have_header_content(thread.excerpt)
-    end
-
-    xit "shows the avatar and username of the original message user" do
-      chat_page.visit_channel(channel)
-      channel_page.message_thread_indicator(thread.original_message).click
-      expect(thread_page.omu).to have_css(".chat-user-avatar img.avatar")
-      expect(thread_page.omu).to have_content(thread.original_message_user.username)
-    end
-
     describe "sending a message" do
       it "shows the message in the thread pane and links it to the correct channel" do
         chat_page.visit_channel(channel)
@@ -125,7 +112,7 @@ describe "Single thread in side panel", type: :system, js: true do
         expect(side_panel).to have_open_thread(thread)
         thread_page.send_message("new thread message")
         expect(thread_page).to have_message(thread_id: thread.id, text: "new thread message")
-        thread_message = thread.replies.last
+        thread_message = thread.last_reply
         expect(thread_message.chat_channel_id).to eq(channel.id)
         expect(thread_message.thread.channel_id).to eq(channel.id)
       end
@@ -196,6 +183,7 @@ describe "Single thread in side panel", type: :system, js: true do
       it "opens the side panel for a single thread using the indicator", mobile: true do
         chat_page.visit_channel(channel)
         channel_page.message_thread_indicator(thread.original_message).click
+
         expect(side_panel).to have_open_thread(thread)
       end
     end

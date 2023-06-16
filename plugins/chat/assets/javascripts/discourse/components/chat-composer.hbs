@@ -9,7 +9,7 @@
         this.currentMessage
         this.currentMessage.inReplyTo
       }}
-      @cancelAction={{this.onCancel}}
+      @cancelAction={{this.composer.cancel}}
     />
   {{/if}}
 
@@ -22,12 +22,11 @@
       (if this.pane.sending "is-sending")
       (if this.sendEnabled "is-send-enabled" "is-send-disabled")
       (if this.disabled "is-disabled" "is-enabled")
+      (if this.currentMessage.draftSaved "is-draft-saved" "is-draft-unsaved")
     }}
     {{did-update this.didUpdateMessage this.currentMessage}}
     {{did-update this.didUpdateInReplyTo this.currentMessage.inReplyTo}}
     {{did-insert this.setup}}
-    {{did-insert this.didUpdateChannel}}
-    {{did-update this.didUpdateChannel @channel.id}}
     {{will-destroy this.teardown}}
     {{will-destroy this.cancelPersistDraft}}
   >
@@ -47,7 +46,7 @@
 
         <div
           class="chat-composer__input-container"
-          {{on "click" this.focusTextarea}}
+          {{on "click" this.composer.focus}}
         >
           <DTextarea
             id={{this.composerId}}
@@ -74,7 +73,7 @@
           {{#each this.inlineButtons as |button|}}
             <Chat::Composer::Button
               @icon={{button.icon}}
-              class={{button.id}}
+              class="-{{button.id}}"
               disabled={{or this.disabled button.disabled}}
               tabindex={{if button.disabled -1 0}}
               {{on
@@ -92,7 +91,7 @@
 
         <Chat::Composer::Button
           @icon="paper-plane"
-          class="chat-composer__send-btn primary"
+          class="-send"
           title={{i18n "chat.composer.send"}}
           disabled={{or this.disabled (not this.sendEnabled)}}
           tabindex={{if this.sendEnabled 0 -1}}
@@ -110,7 +109,7 @@
       @onUploadChanged={{this.onUploadChanged}}
       @existingUploads={{this.currentMessage.uploads}}
       @uploadDropZone={{@uploadDropZone}}
-      @composerInputEl={{this.textareaInteractor.textarea}}
+      @composerInputEl={{this.composer.textarea.element}}
     />
   {{/if}}
 

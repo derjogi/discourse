@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-describe "Default to Subcategory when parent Category doesn't allow posting",
-         type: :system,
-         js: true do
+describe "Default to Subcategory when parent Category doesn't allow posting", type: :system do
   fab!(:user) { Fabricate(:user) }
   fab!(:group) { Fabricate(:group) }
   fab!(:group_user) { Fabricate(:group_user, user: user, group: group) }
@@ -19,7 +17,7 @@ describe "Default to Subcategory when parent Category doesn't allow posting",
   describe "anon user" do
     it "can visit the category" do
       category_page.visit(category_with_no_subcategory)
-      select_kit = PageObjects::Components::SelectKit.new(page.find(".navigation-container"))
+      select_kit = PageObjects::Components::SelectKit.new(".navigation-container")
       expect(select_kit).to have_selected_value(category_with_no_subcategory.id)
     end
   end
@@ -37,9 +35,7 @@ describe "Default to Subcategory when parent Category doesn't allow posting",
           expect(category_page).to have_button("New Topic", disabled: false)
           category_page.new_topic_button.click
           select_kit =
-            PageObjects::Components::SelectKit.new(
-              page.find("#reply-control.open .category-chooser"),
-            )
+            PageObjects::Components::SelectKit.new("#reply-control.open .category-chooser")
           expect(select_kit).to have_selected_value(subcategory.id)
         end
       end
@@ -49,9 +45,7 @@ describe "Default to Subcategory when parent Category doesn't allow posting",
           expect(category_page).to have_button("New Topic", disabled: false)
           category_page.new_topic_button.click
           select_kit =
-            PageObjects::Components::SelectKit.new(
-              page.find("#reply-control.open .category-chooser"),
-            )
+            PageObjects::Components::SelectKit.new("#reply-control.open .category-chooser")
           expect(select_kit).to have_selected_value(default_latest_category.id)
         end
       end

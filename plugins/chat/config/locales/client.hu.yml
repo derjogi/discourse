@@ -349,11 +349,13 @@ hu:
       thread:
         title: "Cím"
         view_thread: Téma megtekintése
+        default_title: "Szál"
         replies:
           one: "%{count} válasz"
           other: "%{count} válasz"
         label: Szál
         settings: "Beállítások"
+        last_reply: "utolsó válasz"
       draft_channel_screen:
         header: "Új üzenet"
         cancel: "Visszavon"

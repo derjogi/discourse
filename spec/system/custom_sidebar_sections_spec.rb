@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe "Custom sidebar sections", type: :system, js: true do
+describe "Custom sidebar sections", type: :system do
   fab!(:user) { Fabricate(:user) }
   fab!(:admin) { Fabricate(:admin) }
   let(:section_modal) { PageObjects::Modals::SidebarSectionForm.new }
@@ -99,7 +99,7 @@ describe "Custom sidebar sections", type: :system, js: true do
     section_modal.save
 
     expect(sidebar).to have_section("Edited section")
-    expect(sidebar).to have_section_link("Edited Tag")
+    expect(sidebar).to have_section_link("Edited Tags")
 
     expect(sidebar).to have_no_section_link("Sidebar Categories")
   end
@@ -114,25 +114,17 @@ describe "Custom sidebar sections", type: :system, js: true do
     sign_in user
     visit("/latest")
 
-    within("[data-section-name='my-section'] .sidebar-section-link-wrapper:nth-child(1)") do
-      expect(sidebar).to have_section_link("Sidebar Tags")
-    end
-
-    within("[data-section-name='my-section'] .sidebar-section-link-wrapper:nth-child(2)") do
-      expect(sidebar).to have_section_link("Sidebar Categories")
-    end
+    expect(sidebar.primary_section_links("my-section")).to eq(
+      ["Sidebar Tags", "Sidebar Categories"],
+    )
 
     tags_link = find(".sidebar-section-link[data-link-name='Sidebar Tags']")
     categories_link = find(".sidebar-section-link[data-link-name='Sidebar Categories']")
     tags_link.drag_to(categories_link, html5: true, delay: 0.4)
 
-    within("[data-section-name='my-section'] .sidebar-section-link-wrapper:nth-child(1)") do
-      expect(sidebar).to have_section_link("Sidebar Categories")
-    end
-
-    within("[data-section-name='my-section'] .sidebar-section-link-wrapper:nth-child(2)") do
-      expect(sidebar).to have_section_link("Sidebar Tags")
-    end
+    expect(sidebar.primary_section_links("my-section")).to eq(
+      ["Sidebar Categories", "Sidebar Tags"],
+    )
   end
 
   it "does not allow the user to edit public section" do
@@ -199,6 +191,40 @@ describe "Custom sidebar sections", type: :system, js: true do
     section_modal.confirm_delete
 
     expect(sidebar).to have_no_section("Edited public section")
+  end
+
+  it "allows admin to edit community section and reset to default" do
+    sign_in admin
+    visit("/latest")
+
+    expect(sidebar.primary_section_icons("community")).to eq(
+      %w[layer-group user flag wrench ellipsis-v],
+    )
+
+    sidebar.edit_custom_section("Community")
+    section_modal.fill_link("Topics", "/latest", "paper-plane")
+    section_modal.fill_name("Edited community section")
+    section_modal.topics_link.drag_to(section_modal.review_link, delay: 0.4)
+    section_modal.save
+
+    expect(sidebar).to have_section("Edited community section")
+    expect(sidebar.primary_section_links("edited-community-section")).to eq(
+      ["My Posts", "Topics", "Review", "Admin", "More"],
+    )
+    expect(sidebar.primary_section_icons("edited-community-section")).to eq(
+      %w[user paper-plane flag wrench ellipsis-v],
+    )
+
+    sidebar.edit_custom_section("Edited community section")
+    section_modal.reset
+
+    expect(sidebar).to have_section("Community")
+    expect(sidebar.primary_section_links("community")).to eq(
+      ["Topics", "My Posts", "Review", "Admin", "More"],
+    )
+    expect(sidebar.primary_section_icons("community")).to eq(
+      %w[layer-group user flag wrench ellipsis-v],
+    )
   end
 
   it "shows anonymous public sections" do
