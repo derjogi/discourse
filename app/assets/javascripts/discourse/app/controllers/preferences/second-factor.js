@@ -11,9 +11,11 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import showModal from "discourse/lib/show-modal";
 import { inject as service } from "@ember/service";
 import SecondFactorConfirmPhrase from "discourse/components/dialog-messages/second-factor-confirm-phrase";
+import SecondFactorBackupEdit from "discourse/components/modal/second-factor-backup-edit";
 
 export default Controller.extend(CanCheckEmails, {
   dialog: service(),
+  modal: service(),
   loading: false,
   dirty: false,
   resetPasswordLoading: false,
@@ -307,14 +309,13 @@ export default Controller.extend(CanCheckEmails, {
     },
 
     editSecondFactorBackup() {
-      const controller = showModal("second-factor-backup-edit", {
-        model: this.model,
-        title: "user.second_factor_backup.title",
-      });
-      controller.setProperties({
-        onClose: () => this.loadSecondFactors(),
-        markDirty: () => this.markDirty(),
-        onError: (e) => this.handleError(e),
+      this.modal.show(SecondFactorBackupEdit, {
+        model: {
+          secondFactor: this.model,
+          onClose: () => this.loadSecondFactors(),
+          markDirty: () => this.markDirty(),
+          onError: (e) => this.handleError(e),
+        },
       });
     },
   },
