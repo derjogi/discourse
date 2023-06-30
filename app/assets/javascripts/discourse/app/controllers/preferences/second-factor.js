@@ -11,9 +11,11 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import showModal from "discourse/lib/show-modal";
 import { inject as service } from "@ember/service";
 import SecondFactorConfirmPhrase from "discourse/components/dialog-messages/second-factor-confirm-phrase";
+import SecondFactorAddTotp from "discourse/components/modal/second-factor-add-totp";
 
 export default Controller.extend(CanCheckEmails, {
   dialog: service(),
+  modal: service(),
   loading: false,
   dirty: false,
   resetPasswordLoading: false,
@@ -257,14 +259,13 @@ export default Controller.extend(CanCheckEmails, {
     },
 
     createTotp() {
-      const controller = showModal("second-factor-add-totp", {
-        model: this.model,
-        title: "user.second_factor.totp.add",
-      });
-      controller.setProperties({
-        onClose: () => this.loadSecondFactors(),
-        markDirty: () => this.markDirty(),
-        onError: (e) => this.handleError(e),
+      this.modal.show(SecondFactorAddTotp, {
+        model: {
+          secondFactor: this.model,
+          onClose: () => this.loadSecondFactors(),
+          markDirty: () => this.markDirty(),
+          onError: (e) => this.handleError(e),
+        },
       });
     },
 
