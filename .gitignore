@@ -43,6 +43,7 @@
 !/plugins/poll/
 !/plugins/styleguide
 /plugins/*/auto_generated/
+!/plugins/summarizer/
 
 /spec/fixtures/plugins/my_plugin/auto_generated
 

@@ -1,0 +1,4 @@
+plugins:
+  summarizer_enabled:
+    default: true
+    client: true

@@ -10,6 +10,16 @@ Discourse is the 100% open source discussion platform built for the next decade 
 
 To learn more about the philosophy and goals of the project, [visit **discourse.org**](https://www.discourse.org).
 
+## To run:
+In two separate terminals, start the backend server and frontend:
+> bundle exec rails server
+> bin/ember-cli -u
+
+When developing plugins, the (frontend?) server needs to be restarted when changes are made:
+> bin/ember-cli -u
+if that doesn't work, you may have to clear the cache first:
+> rm -rf tmp; bin/ember-cli -u
+
 ## Screenshots
 
 

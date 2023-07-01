@@ -99,4 +99,6 @@ Discourse::Application.configure do
   end
 
   config.hosts << /\A(([a-z0-9-]+)\.)*localhost(\:\d+)?\Z/
+  config.hosts << "derjogi-fluffy-spork-5gr6p6756qc7r67-8080.preview.app.github.dev"
+  config.hosts << "derjogi-fluffy-spork-5gr6p6756qc7r67-4200.preview.app.github.dev"
 end
